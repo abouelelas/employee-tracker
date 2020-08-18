@@ -1,0 +1,26 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "tracks employees",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abouelelas/employee-tracker.git"
+  },
+  "author": "Abouelelas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abouelelas/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/abouelelas/employee-tracker#readme"
+}
