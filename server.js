@@ -38,27 +38,33 @@ function start() {
             ]
         }).then(answer => {
             switch (answer.choice) {
-            console.log("response".reponse);
-            return viewDepartments();
-        case "View all roles?":
-            return viewRoles();
-        case "View all employees":
-            return viewEmployees();
-        case "Add a department":
-            return addDepartment();
-        case "Add a Role":
-            return addRole();
-        case "Add an employee":
-            return addEmployee();
-        case "Update employee role":
-            return updateEmployee();
-        case "Exit":
-            return connection.end();
-        }
-        
-} 
-})
+                case "View all roles?":
+                    viewRoles();
+                    break;
+                case "View all employees":
+                    viewEmployees();
+                    break;
+                case "Add a department":
+                    addDepartment();
+                    break;
+                case "Add a Role":
+                    addRole();
+                    break;
+                case "Add an employee":
+                    addEmployee();
+                    break;
+                case "Update employee role":
+                    updateEmployee();
+                    break;
+                case "Exit":
+                    connection.end();
+                    break;
+                default:
+                    start();
+            }
+        });
 }
+
 
 
 
