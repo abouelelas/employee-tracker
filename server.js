@@ -77,6 +77,7 @@ function viewEmployees() {
     function viewDepartments() {
         connection.query("SELECT * FROM department", function (err, data) {
             console.table(data);
+            console.log("\n");
             startQuestions();
         });
     };
