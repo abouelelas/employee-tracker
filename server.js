@@ -7,7 +7,7 @@ const connection = mysql.createConnection({
     host: "localhost",
 
     // Your port
-    // port: 3306,
+    port: 3306,
 
     // Your username
     user: "root",
@@ -23,7 +23,7 @@ connection.connect(function (err) {
     startQuestions();
 });
 
-function startQuestions() {
+const startQuestions =()=> {
     inquirer
         .prompt({
             name: "choice",
@@ -37,6 +37,7 @@ function startQuestions() {
                 "Add a role",
                 "Add an employee",
                 "Update employee role",
+                "View total department budget",
                 "Exit"
             ]
         }).then(answer => {
@@ -62,6 +63,9 @@ function startQuestions() {
                 case "Update employee role":
                     updateEmployee();
                     break;
+                case "View total department budget":
+                    viewBudget();
+                    break;
                 default:
                     connection.end();
                     break;
@@ -70,7 +74,7 @@ function startQuestions() {
             }
         });
 }
-function viewEmployees() {
+const viewEmployees = ()=> {
     connection.query("SELECT * FROM employee", function (err, data) {
         console.log("\n");
         console.table(data);
@@ -78,7 +82,7 @@ function viewEmployees() {
         startQuestions();
     })
 }
-function viewDepartments() {
+const viewDepartments =()=> {
     connection.query("SELECT * FROM department", function (err, data) {
         if (err) throw err;
         console.log("\n");
@@ -87,7 +91,7 @@ function viewDepartments() {
         startQuestions();
     });
 }
-function viewRoles() {
+const viewRoles =() => {
     connection.query("SELECT * FROM role", function (err, data) {
         if (err) throw err;
         console.log("\n");
@@ -98,19 +102,19 @@ function viewRoles() {
 }
 
 
-function addEmployee() {
-    connection.query("SELECT * FROM employee", (err, results)=>{
+const addEmployee =()=> {
+    connection.query("SELECT * FROM employee", (err, results) => {
         if (err)
-        throw(err);
-            // console.log(results);
-        let managerChoices = results.map( e => {
+            throw (err);
+        // console.log(results);
+        let managerChoices = results.map(e => {
             return {
                 name: e.first_name + " " + e.last_name,
                 value: e.id
             }
         });
         managerChoices.push({
-            name: "no manager",value: null
+            name: "no manager", value: null
         })
         inquirer.prompt([{
             type: "input",
@@ -144,3 +148,153 @@ function addEmployee() {
 
 
 }
+    const  addDepartment = () =>{
+    let departmentList = [];
+    let departmentIdList = [];
+
+    connection.query("SELECT * FROM employee_db.department", function (
+        err,
+        res
+    ) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+            departmentList.push(res[i].name);
+            departmentIdList.push(res[i].id.toString());
+        }
+
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "department",
+                    message: "Enter Department Name",
+                },
+            ])
+            .then((val) => {
+                connection.query(
+                    "INSERT INTO department SET ?",
+                    {
+                        name: val.department,
+                    },
+                    function (err, res) {
+                        if (err) throw err;
+                        console.log("\n");
+                        console.log("successfully added Department");
+                        console.log("\n");
+                        startQuestions();
+                    }
+                );
+            });
+    }
+    );
+};
+const addRole = () => {
+    let roleList = [];
+    let roleIdList = [];
+
+    let salaryList = [];
+    let deptIdList = [];
+
+    connection.query("SELECT role_id, title, salary, department_id FROM role LEFT JOIN department ON role.department_id = department.id;", function (
+        err,
+        res
+    ) {
+        if (err) console.log(err);
+        for (var i = 0; i < res.length; i++) {
+            roleList.push(res[i].title);
+            roleIdList.push(res[i].id.toString());
+            salaryList.push(res[i].salary);
+            deptIdList.push(res[i].department_id)
+        }
+
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "roleId",
+                    message: "Enter Role Name"
+                },
+                {
+                    type: "number",
+                    name: "salary",
+                    message: "Enter Salary"
+                },
+                {
+                    type: "input",
+                    name: "department",
+                    message: "Enter Department ID"
+                },
+            ])
+            .then((val) => {
+                connection.query(
+                    "INSERT INTO role SET ?",
+                    {
+                        title: val.title,
+                    },
+                    function (err, res) {
+                        if (err) throw err;
+                        console.log("\n");
+                        console.log("successfully added Role");
+                        console.log("\n");
+                        startQuestions();
+                    }
+                );
+            });
+    }
+    );
+}
+
+const updateEmployee = () => {
+
+    inquirer
+        .prompt({
+            name: "id",
+            type: "input",
+            message: "Enter employee ID",
+        })
+        .then(function (answer) {
+            var id = answer.id;
+            inquirer
+                .prompt({
+                    name: "roleId",
+                    type: "input",
+                    message: "Enter role ID",
+                })
+                .then(function (answer) {
+                    var roleId = answer.roleId;
+                    var query = "UPDATE employee SET role_id=? WHERE id=?";
+                    connection.query(query, [roleId, id], function (err, res) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log('updating employee role');
+                        startQuestions();
+                    });
+                });
+        });
+}
+const viewBudget = () => {
+    let departmentList = ["Engineering", "Sales", "Information Technology", "Finance"];
+    inquirer
+        .prompt({
+            name: "deptList",
+            type: "list",
+            message: "Choose a department to view the budget",
+            choices: departmentList
+        }).then(function (response) {
+            var dptList = response.dptList;
+            var query = "SELECT name, SUM(salary) FROM department LEFT JOIN role ON department.id = role.department_id INNER JOIN employee ON role.id = employee.role_id GROUP BY department.name;"
+            connection.query(query, deptList, function (err, res) {
+                if (err) {
+                    console.log(err);
+                }
+                console.table(res);
+                startQuestions();
+            });
+        }
+        )
+}
+
+// function exit() {
+//     connection.end();
+// }
