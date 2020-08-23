@@ -38,14 +38,13 @@ I want to be able to view and manage the departments, roles, and employees in my
 So that I can organize and plan my business
 ```
 I installed the mysql, console.table, inquirer npm packages.
-
-![Employee Tracker](Assets/employee-tracker.gif)
-
-
-
+* A video demonstrating the entirety of the app's functionality 
+![Employee Tracker](https://drive.google.com/file/d/1DLy5PyzBRG6HYIp9qdaWN46iI8y4oyd5/view)
 
 * The URL of the GitHub repository
+(Employee Tracker)[https://github.com/abouelelas/employee-tracker]
 
-* A video demonstrating the entirety of the app's functionality 
+
+
 
 
